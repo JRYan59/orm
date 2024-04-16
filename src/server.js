@@ -14,6 +14,28 @@ app.get("/products", async (req, res) => {
     const products = await db.query.products.findMany();
     res.json(products);
 })
+app.get("/products/:productId", async (req, res) => {
+    const productId = parseInt(req.params.productId);
+    
+    if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+    }
+    const products = await db.query.products.findMany();
+    let product;
+    for (let i = 0; i < products.length; i++) {
+        if (products[i].id === productId) {
+            product = products[i];
+            res.json(product);
+            break;
+        }
+    }
+    if(!product){
+        return res.status(404).json({ message: "Product not found" });
+    }
+
+});
+
+
 app.post("/products", async (req, res) => {
     let { description, price } = req.body;
     if (!description || !price) {
@@ -68,6 +90,9 @@ app.get("/employees", async (req, res) => {
     const employees = await db.query.employees.findMany();
     res.json(employees);
 })
+
+
+
 app.post("/employees", async (req, res) => {
     let { name, identification } = req.body;
     if (!name || !identification) {
